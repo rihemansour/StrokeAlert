@@ -1,7 +1,7 @@
 import streamlit as st
 import pickle 
 import numpy as np
-
+from encoders import *
 def load_model():
     with open('model.pkl', 'rb') as file:
         data = pickle.load(file)
@@ -25,3 +25,21 @@ def show_predict_page():
     redidence_type = st.selectbox("What's your residence type",residence_values)
     bmi = st.slider("Select your bmi",18,50,24)
     smoking_status = st.selectbox("Do you smoke",values)
+    avg_glucose_level = st.slider("Select your average glucose level in mg/dl",0,350,80)
+    ok = st.button("Predict risk")
+    if ok:
+        gender = encode_gender(gender)
+        ever_married = encode_yes_no(ever_married)
+        smoking_status = encode_yes_no(smoking_status)
+        hypertension = encode_yes_no(hypertension)
+        heart_disease = encode_yes_no(heart_disease)
+        work_type = encode_work_type(work_type)
+        redidence_type = encode_residence_type(redidence_type)
+        X = np.array([[gender,age,hypertension,heart_disease,ever_married,work_type,redidence_type,avg_glucose_level,bmi,smoking_status]])
+        X = X.astype(float)
+        risk = model.predict(X)
+        if(risk==1):
+            st.subheader("You are in risk! You must consult a Doctor ASAP!")
+        else:
+            st.subheader("You're fine! Stay Healthy")
+  
